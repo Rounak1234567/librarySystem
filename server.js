@@ -64,6 +64,36 @@ const bookAuthorSchema = new mongoose.Schema({
 const BookAuthor = mongoose.model("bookAuthor", bookAuthorSchema)
 
 
+// Step-9 - Create schema for user
+
+const usersSchema = new mongoose.Schema({
+    name:{type:String, required:true}
+})
+
+
+// Step-10 - Connect the Schema to user collection
+
+const Users = mongoose.model("user", usersSchema)
+
+
+
+// Step-11 - Create schema for checked_out
+
+const checkedoutSchema = new mongoose.Schema({
+    user_id:{type:mongoose.Schema.Types.ObjectId, ref:"user", required:true},
+    book_id:{type : mongoose.Schema.Types.ObjectId, ref:"book", required:true},
+    checkedOutTime:{type:String, required:false, default:null},
+    checkedInTime:{type:String, required:false, default:null},
+})
+
+
+// Step-12 - Connect the Schema to checked_out collection
+
+const Checkedout = mongoose.model("checkedout", checkedoutSchema)
+
+
+
+
 //----------------CRUD API for Section-----------------------
 
 app.post("/section", async (req, res)=>{
@@ -126,6 +156,33 @@ app.get("/bookauthor", async (req,res)=>{
     const bookauthor = await BookAuthor.find().populate("author_id").populate("book_id").lean().exec();
     res.status(200).send({bookauthor})
 });
+
+
+//----------------CRUD API for users-----------------------
+
+app.post("/users", async(req,res)=>{
+    const users = await Users.create(req.body);
+    return res.status(201).send({users})
+})
+app.get("/users", async (req,res)=>{
+    const users = await Users.find().lean().exec();
+    res.status(200).send({users})
+});
+
+//----------------CRUD API for checked_out-----------------------
+
+app.post("/co", async(req,res)=>{
+    const co = await Checkedout.create(req.body);
+    return res.status(201).send({co})
+})
+app.get("/co", async (req,res)=>{
+    const co = await Checkedout.find().lean().exec();
+    //console.log(co[0].checkedOutTime)
+    res.status(200).send({co})
+});
+
+
+
 
 
 //-----------------All books written by an Author------------------
